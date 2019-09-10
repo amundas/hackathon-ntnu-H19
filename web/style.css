@@ -1,0 +1,10 @@
+
+body {
+    font-family: Roboto, sans-serif;
+    height: 100vh;
+}
+
+.gradient-background {
+    background-color: rgba(247,251,252,1);
+    background-image: linear-gradient(to bottom right, rgb(184, 184, 184),rgb(56, 59, 59));
+}
