@@ -295,3 +295,10 @@ SDK_CONFIG_FILE := ../config/sdk_config.h
 CMSIS_CONFIG_TOOL := $(SDK_ROOT)/external_tools/cmsisconfig/CMSIS_Configuration_Wizard.jar
 sdk_config:
 	java -jar $(CMSIS_CONFIG_TOOL) $(SDK_CONFIG_FILE)
+
+.PHONY: print_includepath print_defines
+print_includepath: 
+	@$(foreach _FOLDER, $(realpath $(INC_FOLDERS)), echo \"$(_FOLDER)\",;)
+
+print_defines:
+	@$(foreach _FLAG, $(subst -D,,$(filter -D%,$(CFLAGS))), echo \"$(_FLAG)\",;)
