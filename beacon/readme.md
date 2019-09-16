@@ -10,8 +10,10 @@ Developing code for Nordic's SoCs can be done with many different IDEs with vari
 * Download the [nR52 SDK](https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/) (This example uses version 15.0.0). Extract the SDK to some appropriate location
 * Install [GNU Arm Embedded Toolchain](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads)
 * Install [nRF Command Line Tools](https://www.nordicsemi.com/?sc_itemid=%7B56868165-9553-444D-AA57-15BDE1BF6B49%7D)
+* **If you are usoing windows:** You need to install a windows version of **make**. You could use [GnuWin32](http://gnuwin32.sourceforge.net/), and remember to add it to your [PATH environment variable](https://docs.alfresco.com/4.2/tasks/fot-addpath.html). If you are up for it, I recommend installing [ubuntu on windows ("WSL)](https://docs.microsoft.com/en-us/windows/wsl/install-win10) intead, but you will have to figure out the details yourself.
 * In your SDK folder, find the file *components/toolchain/gcc/Makefile.posix* (or Makefile.windows if you are on windows) and update it so that `GNU_INSTALL_ROOT` points to the bin folder in the location where you installed GNU Arm Embedded Toolchain.
 * You should now be able to run `make` in the subfolder *pca10040/s132/armgcc* (pca number depending on your board) for the examples in the SDK folder in order to compile the project. Running `make flash` will flash the connected board.
+
 
 ### VS code setup
 VS code is a neat editor, that provides a pleasant experience when coding. However, if you at this point open the ble_app_beacon example in VS code, you'll get a bunch of red squiggly lines and warnings. In order to get proper [intelliSense](https://code.visualstudio.com/docs/editor/intellisense), we need to help the editor understand where to find the source files of the SDK. Specifically, if you press F1 in VS code and search for *C/C++: Edit Configurations (JSON)* you'll get a file that has the settings we are looking for. We need to edit `includePath`, `defines` and `compilerPath`. The `compilerPath` should be set to the full path of arm-none-eabi-gcc, which is one of the things you installed in the last step. The `IncludePath` and the `defines` needs to be updated with the equivalent values from the Makefile, unfortunately the corresponding values in the Makefile are on a entirely different format from what we need to have in the JSON file. In order to help us, we can write some phony makefile targets that will print the values in the format we want:
@@ -25,6 +27,20 @@ print_defines:
 	@$(foreach _FLAG, $(subst -D,,$(filter -D%,$(CFLAGS))), echo \"$(_FLAG)\",;)
 ```
 Add the above code to the bottom of your Makefile, and run `make print_includepath` and `make print_defines`. The output can then be pasted directly into the JSON file!
+
+**If you are using windows, use this instead:**
+```
+define nl
+ 
+ 
+endef
+.PHONY: print_includepath print_defines
+print_includepath:
+    @$(foreach _FOLDER, $(realpath $(INC_FOLDERS)), echo "$(_FOLDER)",$(nl))
+ 
+print_defines:
+    @$(foreach _FLAG, $(subst -D,,$(filter -D%,$(CFLAGS))), echo "$(_FLAG)",$(nl))
+```
 
 
 ### Workflow
